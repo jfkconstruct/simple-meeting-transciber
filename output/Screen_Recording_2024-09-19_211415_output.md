@@ -2,39 +2,31 @@
 
 ## Summary
 
-The speaker offers a tutorial on replacing backgrounds in drawing software, highlighting the importance of matching new and old drawings (pages 7-10). They recommend using "auto select replacements" for efficiency and suggest manually selecting each page. After background replacements, red clouds indicate changed areas for easier review. The tutorial ends with a thank you.
+The speaker describes how to replace backgrounds in drawing software by importing a PDF as the new background. They emphasize matching new drawings with existing ones, particularly drawings 7, 8, 9, and 10. The recommendation is to use the "auto select replacements" option for manual selection instead of making changes to all pages simultaneously. After the replacements, red clouds will highlight the changes for review. The speaker finishes with a summary of the key steps.
 
 ## Next Steps
 
-### Final Action Plan for Background Replacement
+### Final Action Plan for Replacing Backgrounds in Drawings
 
-1. **Prepare PDFs**: Gather PDF files for drawings 7, 8, 9, and 10.
+1. **Open Drawing File**: Access the drawings section in your software.
 
-2. **Import PDFs**:
-   - Open the software and access "File" > "Import PDF."
-   - Select the background replacement option.
+2. **Import PDF**: Select “Import PDF” and choose the correct PDF for background replacement.
 
-3. **Select Correct PDF**: Choose the applicable PDF file for each drawing.
+3. **Enable Auto Select**: Ensure the "auto select replacements" option is activated to avoid bulk replacements.
 
-4. **Enable Auto Select**: Ensure the "auto select replacements" option is checked.
+4. **Select Drawings**: Manually select drawings 7, 8, 9, and 10 from the PDF.
 
-5. **Match Drawings**:
-   - Manually pair new backgrounds with the correct old ones (7, 8, 9, and 10).
-   - Verify each match for accuracy against the PDFs.
+5. **Process PDF**: Allow the software to load the selected backgrounds.
 
-6. **Execute Replacement**: Click "OK" or the confirmation button to apply the background replacements.
+6. **Review Changes**: Look for red clouds or indicators around modified areas.
 
-7. **Review Changes**:
-   - Examine drawings with red clouds for modifications.
-   - Identify any areas needing further adjustments or attention.
+7. **Check Accuracy**: Verify the alignment of new backgrounds with the old ones.
 
-8. **Finalize and Save**: Confirm all matches, finalize changes, and save your work.
+8. **Make Adjustments**: Correct any discrepancies found during review.
 
-9. **Document Process**: Note any challenges or important insights for future reference.
+9. **Finalize Changes**: Save the updated drawings once satisfied with the adjustments.
 
-10. **Communicate Completion**: Inform your team or supervisor about the task completion.
-
-By implementing these steps, you will effectively replace the drawing backgrounds.
+10. **Seek Feedback**: Share the updates with your team for additional review, if applicable.
 
 ## Full Transcript
 
