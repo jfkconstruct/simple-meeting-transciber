@@ -1,4 +1,5 @@
 import os
+import time
 
 import openai
 
@@ -45,10 +46,13 @@ def main():
     os.makedirs(upload_folder, exist_ok=True)
     os.makedirs(output_folder, exist_ok=True)
 
-    print("Please place your audio or video file in the 'uploads' folder.")
-    input("Press Enter when you've uploaded the file...")
-
-    files = os.listdir(upload_folder)
+    print("Waiting for files in the 'uploads' folder...")
+    
+    while True:
+        files = os.listdir(upload_folder)
+        if files:
+            break
+        time.sleep(10)
     if not files:
         print(
             "No files found in the 'uploads' folder. Thank you for using our service. Goodbye!"
