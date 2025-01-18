@@ -206,6 +206,7 @@ def view_summary(filename):
                             padding: 20px;
                             background: #1a1a1a;
                             color: #e0e0e0;
+                            line-height: 1.6;
                         }
                         .container { 
                             background: #2d2d2d; 
@@ -230,12 +231,34 @@ def view_summary(filename):
                             transform: translateY(-1px);
                         }
                         .content {
-                            white-space: pre-wrap;
-                            line-height: 1.6;
+                            line-height: 1.8;
                             margin: 20px 0;
                         }
-                        h1, h2 { color: #e0e0e0; }
+                        h1, h2 { 
+                            color: #e0e0e0;
+                            margin-top: 1.5em;
+                            margin-bottom: 0.8em;
+                        }
                         .actions { margin: 20px 0; }
+                        ul, ol {
+                            padding-left: 2em;
+                            margin: 1em 0;
+                        }
+                        li {
+                            margin: 0.5em 0;
+                        }
+                        code {
+                            background: #363636;
+                            padding: 0.2em 0.4em;
+                            border-radius: 3px;
+                            font-family: monospace;
+                        }
+                        pre {
+                            background: #363636;
+                            padding: 1em;
+                            border-radius: 6px;
+                            overflow-x: auto;
+                        }
                     </style>
                 </head>
                 <body>
