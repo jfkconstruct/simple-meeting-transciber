@@ -1,4 +1,3 @@
-
 import os
 import time
 from flask import Flask, request, send_file, render_template_string
@@ -25,18 +24,35 @@ HTML_TEMPLATE = '''
 <head>
     <title>Video Processing Tool</title>
     <style>
-        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
-        .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+        body { 
+            font-family: 'Inter', Arial, sans-serif;
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+        }
+        .container { 
+            background: #2d2d2d; 
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
         .button { 
             display: inline-block;
-            padding: 10px 20px;
-            background: #659cef;
+            padding: 12px 24px;
+            background: #4a72f5;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 6px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
-        .button:hover {
-            background: #5080d0;
+        .button:hover { 
+            background: #3d5fd9;
+            transform: translateY(-1px);
         }
         .file-input-wrapper {
             display: inline-block;
@@ -57,7 +73,7 @@ HTML_TEMPLATE = '''
         .progress-bar-fill {
             display: block;
             height: 22px;
-            background-color: #659cef;
+            background-color: #4a72f5; /* Match button color */
             border-radius: 3px;
             transition: width 500ms ease-in-out;
             width: 0%;
@@ -65,6 +81,7 @@ HTML_TEMPLATE = '''
         .status-text {
             margin-top: 5px;
             text-align: center;
+            color: #e0e0e0; /* Match body text color */
         }
     </style>
 </head>
@@ -101,7 +118,7 @@ HTML_TEMPLATE = '''
             const progressBar = document.querySelector('.progress-bar-fill');
             const statusText = document.getElementById('statusText');
             let progress = 0;
-            
+
             // Simulate progress for long-running process
             const interval = setInterval(() => {
                 if (progress < 90) {
@@ -116,7 +133,7 @@ HTML_TEMPLATE = '''
                     }
                 }
             }, 1000);
-            
+
             return true;
         };
     </script>
@@ -141,7 +158,7 @@ def process_file(file_path):
     # Clean up temporary audio chunks
     for chunk in audio_chunks:
         os.remove(chunk)
-        
+
     return output_path
 
 @app.route('/', methods=['GET', 'POST'])
@@ -149,25 +166,25 @@ def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
             return 'No file uploaded', 400
-        
+
         file = request.files['file']
         if file.filename == '':
             return 'No file selected', 400
-            
+
         filename = secure_filename(file.filename)
         os.makedirs('uploads', exist_ok=True)
         os.makedirs('output', exist_ok=True)
-        
+
         file_path = os.path.join('uploads', filename)
         file.save(file_path)
-        
+
         output_path = process_file(file_path)
         output_filename = os.path.basename(output_path)
-        
+
         return render_template_string(HTML_TEMPLATE, 
                                    output_path=output_path,
                                    output_filename=output_filename)
-    
+
     return render_template_string(HTML_TEMPLATE)
 
 @app.route('/summary/<filename>')
@@ -182,24 +199,42 @@ def view_summary(filename):
                 <head>
                     <title>Video Processing Results</title>
                     <style>
-                        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
-                        .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+                        body { 
+                            font-family: 'Inter', Arial, sans-serif;
+                            max-width: 800px; 
+                            margin: 0 auto; 
+                            padding: 20px;
+                            background: #1a1a1a;
+                            color: #e0e0e0;
+                        }
+                        .container { 
+                            background: #2d2d2d; 
+                            padding: 25px;
+                            border-radius: 10px;
+                            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+                        }
                         .button { 
                             display: inline-block;
-                            padding: 10px 20px;
-                            background: #659cef;
+                            padding: 12px 24px;
+                            background: #4a72f5;
                             color: white;
                             text-decoration: none;
-                            border-radius: 5px;
+                            border-radius: 6px;
                             margin: 5px;
+                            border: none;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
                         }
-                        .button:hover { background: #5080d0; }
+                        .button:hover { 
+                            background: #3d5fd9;
+                            transform: translateY(-1px);
+                        }
                         .content {
                             white-space: pre-wrap;
                             line-height: 1.6;
                             margin: 20px 0;
                         }
-                        h1, h2 { color: #333; }
+                        h1, h2 { color: #e0e0e0; }
                         .actions { margin: 20px 0; }
                     </style>
                 </head>
@@ -215,34 +250,6 @@ def view_summary(filename):
                 </body>
                 </html>
             ''', content=content, filename=filename)
-            return render_template_string('''
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <title>Summary</title>
-                    <style>
-                        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
-                        .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
-                        .button { 
-                            display: inline-block;
-                            padding: 10px 20px;
-                            background: #659cef;
-                            color: white;
-                            text-decoration: none;
-                            border-radius: 5px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="container">
-                        <div style="white-space: pre-wrap;">{{ summary }}</div>
-                        <div style="margin-top: 20px;">
-                            <a href="/download/{{ filename }}" class="button">Download Full Results</a>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            ''', summary=summary, filename=filename)
     return 'File not found', 404
 
 @app.route('/download/<filename>')
