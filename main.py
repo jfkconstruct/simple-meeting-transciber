@@ -61,7 +61,14 @@ HTML_TEMPLATE = '''
         .file-input-wrapper input[type="file"] {
             display: none;
         }
-        .output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; }
+        .output { 
+            white-space: pre-wrap; 
+            background: #363636; 
+            padding: 20px; 
+            margin-top: 20px;
+            border-radius: 8px;
+            color: #e0e0e0;
+        }
         .progress-container { display: none; margin-top: 20px; }
         .progress-bar { 
             width: 100%;
