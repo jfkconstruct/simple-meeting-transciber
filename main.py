@@ -215,6 +215,14 @@ def view_summary(filename):
     if os.path.exists(file_path):
         with open(file_path, 'r') as f:
             content = f.read()
+            # Convert Markdown to HTML for viewing
+            content = (content.replace('# ', '<h1>')
+                            .replace('\n## ', '</p><h2>')
+                            .replace('\n\n', '</p><p>')
+                            .replace('**', '<strong>')
+                            .replace('*', '<em>'))
+            if not content.endswith('</p>'):
+                content += '</p>'
             return render_template_string('''
                 <!DOCTYPE html>
                 <html>
