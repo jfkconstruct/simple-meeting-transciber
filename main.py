@@ -28,15 +28,41 @@ HTML_TEMPLATE = '''
         body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
         .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
         .output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; }
+        .progress-container { display: none; margin-top: 20px; }
+        .progress-bar { 
+            width: 100%;
+            background-color: #f0f0f0;
+            padding: 3px;
+            border-radius: 3px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+        }
+        .progress-bar-fill {
+            display: block;
+            height: 22px;
+            background-color: #659cef;
+            border-radius: 3px;
+            transition: width 500ms ease-in-out;
+            width: 0%;
+        }
+        .status-text {
+            margin-top: 5px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Video Processing Tool</h1>
-        <form action="/" method="post" enctype="multipart/form-data">
+        <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept=".mp4,.avi,.mov,.wav" required>
             <input type="submit" value="Process Video">
         </form>
+        <div id="progressContainer" class="progress-container">
+            <div class="progress-bar">
+                <span class="progress-bar-fill"></span>
+            </div>
+            <div id="statusText" class="status-text">Processing...</div>
+        </div>
         {% if output_path %}
         <div class="output">
             <h2>Processing Complete!</h2>
@@ -44,6 +70,31 @@ HTML_TEMPLATE = '''
         </div>
         {% endif %}
     </div>
+    <script>
+        document.getElementById('uploadForm').onsubmit = function() {
+            document.getElementById('progressContainer').style.display = 'block';
+            const progressBar = document.querySelector('.progress-bar-fill');
+            const statusText = document.getElementById('statusText');
+            let progress = 0;
+            
+            // Simulate progress for long-running process
+            const interval = setInterval(() => {
+                if (progress < 90) {
+                    progress += Math.random() * 10;
+                    progressBar.style.width = progress + '%';
+                    if (progress < 30) {
+                        statusText.textContent = 'Converting audio...';
+                    } else if (progress < 60) {
+                        statusText.textContent = 'Transcribing...';
+                    } else {
+                        statusText.textContent = 'Generating summary...';
+                    }
+                }
+            }, 1000);
+            
+            return true;
+        };
+    </script>
 </body>
 </html>
 '''
