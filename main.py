@@ -66,7 +66,7 @@ HTML_TEMPLATE = '''
         <h1>Video Processing Tool</h1>
         <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
             <input type="file" name="file" accept=".mp4,.avi,.mov,.wav" required>
-            <input type="submit" value="Process Video">
+            <input type="submit" value="Process Video" class="button">
         </form>
         <div id="progressContainer" class="progress-container">
             <div class="progress-bar">
@@ -166,10 +166,45 @@ def view_summary(filename):
     if os.path.exists(file_path):
         with open(file_path, 'r') as f:
             content = f.read()
-            # Extract summary section
-            start = content.find('## Summary')
-            end = content.find('##', start + 1)
-            summary = content[start:end] if end != -1 else content[start:]
+            return render_template_string('''
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Video Processing Results</title>
+                    <style>
+                        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+                        .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+                        .button { 
+                            display: inline-block;
+                            padding: 10px 20px;
+                            background: #659cef;
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 5px;
+                            margin: 5px;
+                        }
+                        .button:hover { background: #5080d0; }
+                        .content {
+                            white-space: pre-wrap;
+                            line-height: 1.6;
+                            margin: 20px 0;
+                        }
+                        h1, h2 { color: #333; }
+                        .actions { margin: 20px 0; }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>Processing Results</h1>
+                        <div class="content">{{ content }}</div>
+                        <div class="actions">
+                            <a href="/download/{{ filename }}" class="button">Download Full Results</a>
+                            <a href="/" class="button">Process Another Video</a>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            ''', content=content, filename=filename)
             return render_template_string('''
                 <!DOCTYPE html>
                 <html>
