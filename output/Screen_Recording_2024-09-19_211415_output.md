@@ -2,34 +2,31 @@
 
 ## Summary
 
-The speaker outlines how to replace backgrounds in a drawing using a PDF, guiding the listener through the menu navigation, importing the PDF, and selecting drawings for replacement. They stress the significance of properly matching new images to old ones and recommend using the "auto select replacements" option to prevent accidental changes to all pages. After confirming selections, modified areas will be marked in red for review, with a final reminder to check for significant changes in those areas.
+The speaker describes how to replace backgrounds in drawing software by importing a PDF as the new background. They emphasize matching new drawings with existing ones, particularly drawings 7, 8, 9, and 10. The recommendation is to use the "auto select replacements" option for manual selection instead of making changes to all pages simultaneously. After the replacements, red clouds will highlight the changes for review. The speaker finishes with a summary of the key steps.
 
 ## Next Steps
 
 ### Final Action Plan for Replacing Backgrounds in Drawings
 
-1. **Open the Software:** Launch the application for editing your drawings.
-  
-2. **Access Drawings:** Navigate to the 'File' menu and select 'Drawings' to locate the files you need.
+1. **Open Drawing File**: Access the drawings section in your software.
 
-3. **Import PDF Backgrounds:** Choose the 'Import PDF' option and select the appropriate PDF for background replacement.
+2. **Import PDF**: Select “Import PDF” and choose the correct PDF for background replacement.
 
-4. **Select the Desired PDF:** Ensure you only choose the PDF provided for background updates.
+3. **Enable Auto Select**: Ensure the "auto select replacements" option is activated to avoid bulk replacements.
 
-5. **Activate Auto Select Replacements:** Enable the 'Auto Select Replacements' feature for manual drawing selection.
+4. **Select Drawings**: Manually select drawings 7, 8, 9, and 10 from the PDF.
 
-6. **Manually Select Drawings:** Select drawings 7, 8, 9, and 10 for the background updates.
+5. **Process PDF**: Allow the software to load the selected backgrounds.
 
-7. **Review Changes:** Inspect the red clouds indicating modifications to confirm changes are accurate.
+6. **Review Changes**: Look for red clouds or indicators around modified areas.
 
-8. **Ensure Consistency:** Compare the new backgrounds with the old ones for consistency and accuracy.
+7. **Check Accuracy**: Verify the alignment of new backgrounds with the old ones.
 
-9. **Finalize Changes:** Confirm that all updates are correct before finalizing the process.
+8. **Make Adjustments**: Correct any discrepancies found during review.
 
-10. **Save your Work:** Save the file to preserve the changes made.
+9. **Finalize Changes**: Save the updated drawings once satisfied with the adjustments.
 
-### Note:
-If issues arise, consult the software’s help documentation or seek additional assistance.
+10. **Seek Feedback**: Share the updates with your team for additional review, if applicable.
 
 ## Full Transcript
 
