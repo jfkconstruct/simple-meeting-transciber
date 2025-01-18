@@ -113,6 +113,21 @@ HTML_TEMPLATE = '''
         {% endif %}
     </div>
     <script>
+        document.getElementById('file-input').onchange = function() {
+            const fileLabel = document.createElement('span');
+            fileLabel.textContent = ' ' + this.files[0].name;
+            fileLabel.style.marginLeft = '10px';
+            fileLabel.style.color = '#e0e0e0';
+            
+            // Remove any existing filename display
+            const existingLabel = this.parentElement.querySelector('span');
+            if (existingLabel) {
+                existingLabel.remove();
+            }
+            
+            this.parentElement.appendChild(fileLabel);
+        };
+
         document.getElementById('uploadForm').onsubmit = function() {
             document.getElementById('progressContainer').style.display = 'block';
             const progressBar = document.querySelector('.progress-bar-fill');
