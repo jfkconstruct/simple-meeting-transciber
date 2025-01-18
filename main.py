@@ -27,6 +27,17 @@ HTML_TEMPLATE = '''
     <style>
         body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
         .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+        .button { 
+            display: inline-block;
+            padding: 10px 20px;
+            background: #659cef;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+        .button:hover {
+            background: #5080d0;
+        }
         .output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; }
         .progress-container { display: none; margin-top: 20px; }
         .progress-bar { 
@@ -66,7 +77,11 @@ HTML_TEMPLATE = '''
         {% if output_path %}
         <div class="output">
             <h2>Processing Complete!</h2>
-            <p>Your file has been processed. <a href="/download/{{ output_filename }}">Download Results</a></p>
+            <p>Your file has been processed.</p>
+            <div style="margin-top: 15px;">
+                <a href="/summary/{{ output_filename }}" class="button" style="margin-right: 10px;">View Summary</a>
+                <a href="/download/{{ output_filename }}" class="button">Download Full Results</a>
+            </div>
         </div>
         {% endif %}
     </div>
@@ -144,6 +159,46 @@ def upload_file():
                                    output_filename=output_filename)
     
     return render_template_string(HTML_TEMPLATE)
+
+@app.route('/summary/<filename>')
+def view_summary(filename):
+    file_path = os.path.join('output', filename)
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as f:
+            content = f.read()
+            # Extract summary section
+            start = content.find('## Summary')
+            end = content.find('##', start + 1)
+            summary = content[start:end] if end != -1 else content[start:]
+            return render_template_string('''
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Summary</title>
+                    <style>
+                        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+                        .container { background: #f5f5f5; padding: 20px; border-radius: 5px; }
+                        .button { 
+                            display: inline-block;
+                            padding: 10px 20px;
+                            background: #659cef;
+                            color: white;
+                            text-decoration: none;
+                            border-radius: 5px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <div style="white-space: pre-wrap;">{{ summary }}</div>
+                        <div style="margin-top: 20px;">
+                            <a href="/download/{{ filename }}" class="button">Download Full Results</a>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            ''', summary=summary, filename=filename)
+    return 'File not found', 404
 
 @app.route('/download/<filename>')
 def download_file(filename):
