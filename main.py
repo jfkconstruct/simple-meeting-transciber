@@ -38,6 +38,13 @@ HTML_TEMPLATE = '''
         .button:hover {
             background: #5080d0;
         }
+        .file-input-wrapper {
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .file-input-wrapper input[type="file"] {
+            display: none;
+        }
         .output { white-space: pre-wrap; background: #fff; padding: 15px; margin-top: 20px; }
         .progress-container { display: none; margin-top: 20px; }
         .progress-bar { 
@@ -65,7 +72,10 @@ HTML_TEMPLATE = '''
     <div class="container">
         <h1>Video Processing Tool</h1>
         <form id="uploadForm" action="/" method="post" enctype="multipart/form-data">
-            <input type="file" name="file" accept=".mp4,.avi,.mov,.wav" required>
+            <div class="file-input-wrapper">
+                <input type="file" name="file" accept=".mp4,.avi,.mov,.wav" id="file-input" required>
+                <label for="file-input" class="button">Browse</label>
+            </div>
             <input type="submit" value="Process Video" class="button">
         </form>
         <div id="progressContainer" class="progress-container">
