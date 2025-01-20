@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 
 import openai
 from utils import (
-    chunk_audio,
     chunk_text,
     convert_to_audio,
     generate_next_steps,
     generate_output_file,
     generate_summary,
     transcribe_audio,
+    cleanup_temp_files
 )
 
 # Load environment variables from .env file
@@ -180,10 +180,12 @@ HTML_TEMPLATE = '''
 def process_file(file_path):
     """Process the uploaded file and generate the document."""
     print("> Converting audio")
-    audio_path = convert_to_audio(file_path)
-    audio_chunks = chunk_audio(audio_path)
+    audio_path, was_converted = convert_to_audio(file_path)
+    
     print("> Transcribing audio")
-    transcript = transcribe_audio(audio_chunks)
+    transcript = transcribe_audio(audio_path)
+    
+    print("> Generating summary and next steps")
     transcript_chunks = chunk_text(transcript)
     summary = generate_summary(transcript_chunks)
     next_steps = generate_next_steps(transcript_chunks)
@@ -191,9 +193,8 @@ def process_file(file_path):
     print("> Generating output")
     output_path = generate_output_file(file_path, transcript, summary, next_steps)
 
-    # Clean up temporary audio chunks
-    for chunk in audio_chunks:
-        os.remove(chunk)
+    # Clean up temporary files if video was converted
+    cleanup_temp_files(audio_path, was_converted)
 
     return output_path
 

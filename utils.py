@@ -3,11 +3,10 @@ import sys
 import time
 import logging
 import speech_recognition as sr
-import openai
-from pydub import AudioSegment
+from faster_whisper import WhisperModel
 from moviepy.editor import VideoFileClip
 from tqdm import tqdm
-from concurrent.futures import ThreadPoolExecutor, as_completed, TimeoutError
+import openai
 from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Set up logging
@@ -36,137 +35,60 @@ def compress_audio(audio_segment, target_size_mb=20):
     
     return audio_segment
 
-def chunk_audio(audio_path, chunk_length_ms=120000):  # 2 minutes per chunk
-    """Split audio into chunks of a specified length with size limit handling."""
-    logger.info(f"Loading audio file: {audio_path}")
-    audio = AudioSegment.from_file(audio_path)
-    chunks = []
-    
-    # First convert to mono and standardize sample rate to reduce size
-    audio = audio.set_channels(1).set_frame_rate(16000)
-    
-    for i in range(0, len(audio), chunk_length_ms):
-        chunk = audio[i:i + chunk_length_ms]
-        
-        # Compress chunk if needed
-        chunk = compress_audio(chunk)
-        
-        # Export with reduced quality if still too large
-        chunk_path = f"{audio_path[:-4]}_chunk_{i//chunk_length_ms}.wav"
-        export_kwargs = {
-            'format': 'wav',
-            'parameters': ['-ar', '16000', '-ac', '1']
-        }
-        
-        chunk.export(chunk_path, **export_kwargs)
-        
-        # Verify final size
-        size_mb = os.path.getsize(chunk_path) / (1024 * 1024)
-        logger.info(f"Chunk {i//chunk_length_ms} size: {size_mb:.2f}MB")
-        
-        if size_mb > 25:
-            logger.warning(f"Chunk {chunk_path} still too large. Reducing quality further.")
-            # If still too large, reduce quality more aggressively
-            export_kwargs['parameters'].extend(['-q:a', '3'])
-            chunk.export(chunk_path, **export_kwargs)
-            size_mb = os.path.getsize(chunk_path) / (1024 * 1024)
-            logger.info(f"Reduced chunk {i//chunk_length_ms} size: {size_mb:.2f}MB")
-        
-        chunks.append(chunk_path)
-    
-    return chunks
-
 def convert_to_audio(file_path):
     """Convert video to audio if necessary."""
     if file_path.lower().endswith(('.mp4', '.avi', '.mov')):
+        logger.info(f"Converting video file to audio: {file_path}")
         video = VideoFileClip(file_path)
         audio = video.audio
         audio_path = file_path.rsplit('.', 1)[0] + '.wav'
         audio.write_audiofile(audio_path) if audio else None
         video.close()
-        return audio_path
-    return file_path
+        return audio_path, True  # Return flag indicating if conversion happened
+    return file_path, False
 
-@retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
-    reraise=True
-)
-def transcribe_chunk(chunk):
-    """Transcribe a single audio chunk with retry logic."""
+def transcribe_audio(audio_path):
+    """Transcribe audio using faster-whisper."""
+    logger.info("Initializing faster-whisper model...")
+    
+    # Initialize model with float16 on GPU if available, otherwise use int8 on CPU
     try:
-        logger.info(f"Starting transcription of chunk: {chunk}")
-        start_time = time.time()
-        
-        # Ensure the file exists and is readable
-        if not os.path.exists(chunk):
-            raise FileNotFoundError(f"Chunk file not found: {chunk}")
-            
-        file_size = os.path.getsize(chunk) / (1024 * 1024)  # Size in MB
-        logger.info(f"Processing chunk {chunk} (Size: {file_size:.2f}MB)")
-        
-        with open(chunk, "rb") as audio_file:
-            transcript = openai.audio.transcriptions.create(
-                model="whisper-1", 
-                file=audio_file,
-                timeout=60  # Increased timeout
-            )
-        
-        duration = time.time() - start_time
-        logger.info(f"Finished transcribing chunk {chunk} in {duration:.2f} seconds")
-        
-        # Clean up the chunk file after successful transcription
-        try:
-            os.remove(chunk)
-            logger.info(f"Cleaned up chunk file: {chunk}")
-        except Exception as e:
-            logger.warning(f"Failed to clean up chunk {chunk}: {e}")
-            
-        return transcript.text
-    except Exception as e:
-        logger.error(f"Error transcribing chunk {chunk}: {str(e)}")
-        raise  # Let the retry decorator handle it
+        model = WhisperModel("large-v3", device="cuda", compute_type="float16")
+        logger.info("Using GPU with float16")
+    except (ImportError, RuntimeError):
+        model = WhisperModel("large-v3", device="cpu", compute_type="int8")
+        logger.info("Using CPU with int8")
+    
+    logger.info("Starting transcription...")
+    
+    # Perform transcription with VAD filter and word timestamps
+    segments, info = model.transcribe(
+        audio_path,
+        beam_size=5,
+        word_timestamps=True,
+        vad_filter=True,  # Filter out silence
+        vad_parameters=dict(min_silence_duration_ms=500)  # Adjust silence threshold
+    )
+    
+    # Convert generator to list to start transcription
+    segments = list(segments)
+    
+    # Log detected language
+    logger.info(f"Detected language: {info.language} (probability: {info.language_probability:.2f})")
+    
+    # Combine all segments into full transcript
+    transcript = " ".join(segment.text for segment in segments)
+    
+    return transcript.strip()
 
-def transcribe_audio(audio_chunks):
-    """Transcribe audio chunks using OpenAI Whisper with parallel processing."""
-    full_transcript = []
-    failed_chunks = []
-    
-    logger.info(f"Starting transcription of {len(audio_chunks)} chunks")
-    
-    # Process chunks in smaller batches to avoid overwhelming the API
-    batch_size = 2
-    for i in range(0, len(audio_chunks), batch_size):
-        batch = audio_chunks[i:i+batch_size]
-        logger.info(f"Processing batch {i//batch_size + 1} of {(len(audio_chunks) + batch_size - 1)//batch_size}")
-        
-        with ThreadPoolExecutor(max_workers=1) as executor:  # Process one chunk at a time
-            futures = {executor.submit(transcribe_chunk, chunk): chunk for chunk in batch}
-            
-            with tqdm(total=len(batch), desc=f"Batch {i//batch_size + 1}", unit="chunk") as pbar:
-                for future in as_completed(futures, timeout=600):  # 10 minute timeout per batch
-                    chunk = futures[future]
-                    try:
-                        result = future.result()
-                        full_transcript.append(result)
-                        logger.info(f"Successfully processed chunk: {chunk}")
-                    except Exception as e:
-                        error_msg = f"Failed to process chunk {chunk}: {str(e)}"
-                        logger.error(error_msg)
-                        full_transcript.append(f"[{error_msg}]")
-                        failed_chunks.append(chunk)
-                    finally:
-                        pbar.update(1)
-        
-        # Add a small delay between batches
-        if i + batch_size < len(audio_chunks):
-            logger.info("Waiting 5 seconds before processing next batch...")
-            time.sleep(5)
-    
-    if failed_chunks:
-        logger.warning(f"Failed to process {len(failed_chunks)} chunks: {failed_chunks}")
-    
-    return " ".join(full_transcript).strip()
+def cleanup_temp_files(audio_path, was_converted):
+    """Clean up temporary audio files from video conversion."""
+    if was_converted:
+        try:
+            os.remove(audio_path)
+            logger.info(f"Cleaned up temporary audio file: {audio_path}")
+        except Exception as e:
+            logger.warning(f"Failed to clean up temporary file {audio_path}: {e}")
 
 def chunk_text(text, chunk_size=127000):
     """Split text into chunks."""

@@ -6,6 +6,9 @@ A tool for transcribing video or audio files and generating insightful summaries
 
 - Supports various video and audio formats (mp4, avi, mov, wav)
 - Fast and accurate transcription using faster-whisper
+- Automatic GPU acceleration with CPU fallback
+- Voice Activity Detection (VAD) to filter out silence
+- Word-level timestamps for precise navigation
 - Local transcription processing (no API needed for transcription)
 - Generates a concise summary of the transcript using OpenAI
 - Suggests next steps based on the content
@@ -15,7 +18,7 @@ A tool for transcribing video or audio files and generating insightful summaries
 ## Requirements
 
 - Python 3.9 or higher
-- CUDA 12 and cuDNN 8 (optional, for GPU acceleration)
+- CUDA 12.x and cuDNN 9.x (optional, for GPU acceleration)
 - OpenAI API key (for summary generation only)
 
 ## Setup
@@ -36,6 +39,11 @@ A tool for transcribing video or audio files and generating insightful summaries
    OPENAI_API_KEY=your_api_key_here
    ```
 
+4. (Optional) For GPU acceleration:
+   - Install CUDA 12.x from [NVIDIA CUDA Toolkit](https://developer.nvidia.com/cuda-downloads)
+   - Install cuDNN 9.x from [NVIDIA cuDNN](https://developer.nvidia.com/cudnn)
+   - The system will automatically use GPU if available, otherwise fall back to CPU
+
 ## Usage
 
 1. Start the web server:
@@ -52,33 +60,29 @@ A tool for transcribing video or audio files and generating insightful summaries
 ## Output
 
 The generated output file will contain:
-- Full transcript of the audio
+- Full transcript of the audio with timestamps
 - A summary of the content
 - Suggested next steps based on the content
 
-## Dependencies
+## Performance Notes
 
-This project uses several Python libraries:
-- `faster-whisper` for local transcription processing
-- `openai` for generating summaries and next steps
-- `moviepy` for handling video files
-- `flask` for the web interface
+- GPU acceleration (if available) provides significantly faster processing
+- CPU mode uses int8 quantization for optimal performance
+- Voice Activity Detection (VAD) automatically removes silence
+- Processing time depends on:
+  - File length
+  - Available hardware (GPU/CPU)
+  - Amount of silence in the audio
 
 ## Customization
 
 The transcription process can be customized by modifying parameters in `utils.py`:
-1. Model size: The default model is `large-v3` for best accuracy, but you can change to other sizes like `small` or `medium` for faster processing
-2. Batch size: Adjust based on your GPU memory
-3. Beam size: Controls the trade-off between speed and accuracy
+1. Model size: The default model is `large-v3` for best accuracy
+2. VAD parameters: Adjust silence detection sensitivity
+3. Beam size: Controls the trade-off between speed and accuracy (default: 5)
 
 ## Note
 
 Please ensure you have the necessary rights to transcribe and analyze the audio/video files you upload.
-
-## Performance Notes
-
-- GPU acceleration is recommended for faster processing
-- CPU-only mode is supported but will be significantly slower
-- Processing time depends on the file length and chosen model size
 
 Happy transcribing and analyzing!
