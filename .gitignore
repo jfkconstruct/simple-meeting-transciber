@@ -171,3 +171,21 @@ replit.nix
 replit_zip_error_log.txt
 test_cuda.py
 cudnn.py
+
+# Media files
+*.mp3
+*.mp4
+*.wav
+*.m4a
+*.ogg
+*.webm
+*.mov
+*.avi
+*.flv
+*.wmv
+*.png
+*.jpg
+*.jpeg
+*.gif
+attached_assets/
+generated-icon.png
