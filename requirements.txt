@@ -1,4 +1,11 @@
+numpy<2.0
 openai==1.43.0
 moviepy==1.0.3
 SpeechRecognition==3.10.4
 pydub==0.25.1
+Flask==3.0.0
+Werkzeug==3.0.1
+tqdm==4.66.1
+pyaudio==0.2.14
+python-dotenv==1.0.0
+tenacity==8.2.3

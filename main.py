@@ -2,6 +2,7 @@ import os
 import time
 from flask import Flask, request, send_file, render_template_string
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
 import openai
 from utils import (
@@ -14,8 +15,21 @@ from utils import (
     transcribe_audio,
 )
 
+# Load environment variables from .env file
+load_dotenv()
+
 app = Flask(__name__)
-openai.api_key = os.environ['OPENAI_API_KEY']
+
+# Try to get API key from environment variable
+try:
+    openai.api_key = os.getenv('OPENAI_API_KEY')
+    if not openai.api_key:
+        raise KeyError("API key is empty")
+except KeyError:
+    print("OpenAI API key not found in environment variables.")
+    print("Please ensure your .env file contains:")
+    print("    OPENAI_API_KEY=your_api_key_here")
+    exit(1)
 
 # HTML template for the upload interface
 HTML_TEMPLATE = '''
@@ -280,6 +294,5 @@ def download_file(filename):
                     as_attachment=True)
 
 if __name__ == "__main__":
-    if __name__ == "__main__":
     print("Server starting on http://0.0.0.0:3000")
     app.run(host='0.0.0.0', port=3000, debug=True)
